@@ -42,11 +42,11 @@ In checkout scenarios, the extension identifies the "startPaymentGateway_INITReq
 
 ## Feedback and Support
 
-If you encounter any issues, have suggestions for improvements, or need support, please feel free to reach out to our support team at support@paymentssherifflogs.com. We value your feedback and are committed to making the extension more effective and user-friendly.
+If you encounter any issues, have suggestions for improvements, or need support, please feel free to open an issue. We value your feedback and are committed to making the extension more effective and user-friendly.
 
 ## Contribute
 
-We welcome contributions from the community to enhance the extension's functionality and address any potential bugs. If you'd like to contribute, please fork the [GitHub repository](https://github.com/your-username/payments-sheriff-logs) and submit a pull request with your proposed changes.
+We welcome contributions from the community to enhance the extension's functionality and address any potential bugs. If you'd like to contribute, please fork the [GitHub repository](https://github.com/vbarzana/payments-sheriff-logs) and submit a pull request with your proposed changes.
 
 ## License
 
