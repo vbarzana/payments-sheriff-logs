@@ -62,7 +62,7 @@ function highlightTimestampsInFrame(frame) {
 
         if (isNSecondsBefore(currentTimestamp, nextTimestamp)) {
             // Apply the yellow background color directly to the DOM node
-            timestamps[i].style.color = 'orange';
+            timestamps[i].style.color = '#ec7211';
             const formattedTime = formatMilliseconds(Math.abs(currentTimestamp - nextTimestamp));
 
             timestamps[i].title = `Operation took ${formattedTime}`
