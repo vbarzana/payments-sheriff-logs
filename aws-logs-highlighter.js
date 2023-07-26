@@ -1,4 +1,4 @@
-const SECONDS_DIFF_TO_HIGHLIGHT = 15;
+const SECONDS_DIFF_TO_HIGHLIGHT = 14;
 
 function findTimestampColumn(frame) {
     let pos = -1;
@@ -19,8 +19,8 @@ function parseTimestamp(timestamp) {
 function isNSecondsBefore(date1, date2, seconds = SECONDS_DIFF_TO_HIGHLIGHT) {
     // Calculate the time difference in milliseconds between two Date objects
     const timeDifference = Math.abs(date1 - date2);
-    const thirtySecondsInMilliseconds = seconds * 1000; // 30 seconds in milliseconds
-    return timeDifference >= thirtySecondsInMilliseconds;
+    const msThreshold = seconds * 1000; // 30 seconds in milliseconds
+    return timeDifference >= msThreshold;
 }
 
 function formatMilliseconds(milliseconds) {
