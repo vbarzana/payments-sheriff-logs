@@ -37,7 +37,8 @@ function formatMilliseconds(milliseconds) {
 function highlightTimestampsInFrame(frame) {
     const allCells = Array.from(frame.querySelectorAll('.logs-table__body-cell'));
     for(let cell of allCells){
-        if(cell.innerHTML.match(/error/ig)){
+        // matches error inside any string, except in /error/ or /errors/ or errorUrl
+        if(cell.innerHTML.match(/\berror\b(?!Url|\/error\/|\/errors\/)/gi)){
             cell.style.color = 'red';
         }
         if(cell.innerHTML.indexOf('startPaymentGateway_INITRequest') >= 0){
