@@ -9,7 +9,8 @@
   "content_scripts": [
     {
       "matches": [
-        "https://eu-central-1.console.aws.amazon.com/cloudwatch/*"
+        "https://eu-central-1.console.aws.amazon.com/cloudwatch/*",
+        "https://*.awsapps.com/start*"
       ],
       "js": [
         "aws-logs-highlighter.js"
@@ -26,6 +27,7 @@
     "webRequest"
   ],
   "host_permissions": [
-    "https://eu-central-1.console.aws.amazon.com/cloudwatch/*"
+    "https://eu-central-1.console.aws.amazon.com/cloudwatch/*",
+    "https://*.awsapps.com/start*"
   ]
 }

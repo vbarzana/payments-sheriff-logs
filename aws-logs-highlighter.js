@@ -36,12 +36,12 @@ function formatMilliseconds(milliseconds) {
 
 function highlightTimestampsInFrame(frame) {
     const allCells = Array.from(frame.querySelectorAll('.logs-table__body-cell'));
-    for(let cell of allCells){
+    for (let cell of allCells) {
         // matches error inside any string, except in /error/ or /errors/ or errorUrl
-        if(cell.innerHTML.match(/(\s*error\s*)(?!Url\b|\/)/gi)){
+        if (cell.innerHTML.match(/(\s*error\s*)(?!Url\b|\/)/gi)) {
             cell.style.color = 'red';
         }
-        if(cell.innerHTML.indexOf('startPaymentGateway_INITRequest') >= 0){
+        if (cell.innerHTML.indexOf('startPaymentGateway_INITRequest') >= 0) {
             cell.style.fontWeight = 'bold';
             cell.style.fontFamily = 'Amazon Ember';
             cell.style.fontSize = '14px';
@@ -94,6 +94,33 @@ function highlightTimestampsOnPage(frame) {
     }
 }
 
-setInterval(function () {
-    highlightTimestampsOnPage();
-}, 3000);
+let isPortalOpen = false;
+let portalTimeout;
+
+function openPortal() {
+    if (isPortalOpen || location.href.indexOf('.awsapps.com/start') < 0) {
+        return clearTimeout(portalTimeout);
+    }
+    let portalBtn = document.getElementsByTagName('portal-application')[0];
+    if (!portalBtn) {
+        return portalTimeout = setTimeout(openPortal, 300);
+    }
+    try {
+        console.log('Portal button loaded, clicking it for you! Your sheriff life just got easier :)');
+        portalBtn.click();
+        const searchInput = document.querySelector('sso-search input');
+        searchInput.focus();
+    } catch (err) {
+        console.log('Could not open profiles or focus search input', err);
+    }
+}
+
+function start() {
+    openPortal();
+    setInterval(function () {
+        highlightTimestampsOnPage();
+    }, 3000);
+    // add more initializers here
+}
+
+start();
