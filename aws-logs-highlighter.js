@@ -47,6 +47,7 @@ function highlightTimestampsInFrame(frame) {
             cell.style.fontSize = '14px';
         }
     }
+    changeDocumentTitleIfDifferent(frame);
     if (isQueryRunning(frame)) {
         return;
     }
@@ -76,7 +77,7 @@ function isQueryRunning(frame) {
     return btn && btn.disabled;
 }
 
-function highlightTimestampsOnPage(frame) {
+function highlightTimestampsOnPage() {
     try {
         highlightTimestampsInFrame(document);
     } catch (err) {
@@ -113,6 +114,27 @@ function openPortal() {
     } catch (err) {
         console.log('Could not open profiles or focus search input', err);
     }
+}
+
+function changeDocumentTitleIfDifferent(frame) {
+    const breadcrumbs = getBreadcrumbs(frame);
+    const activeBreadcrumb = breadcrumbs[breadcrumbs.length - 1];
+    if (activeBreadcrumb && activeBreadcrumb.textContent && isInCloudWatchLogs(frame)) {
+        const newTitle = activeBreadcrumb.textContent.toUpperCase() || document.title;
+        if (document.title !== newTitle) {
+            document.title = newTitle;
+        }
+    }
+}
+
+function getBreadcrumbs(frame) {
+    return frame.getElementsByClassName('awsui-breadcrumb');
+}
+
+function isInCloudWatchLogs(frame) {
+    const breadcrumbs = getBreadcrumbs(frame);
+    const firstBreadcrumb = breadcrumbs[0];
+    return firstBreadcrumb && firstBreadcrumb.textContent && firstBreadcrumb.textContent.indexOf('CloudWatch') >= 0;
 }
 
 function start() {
