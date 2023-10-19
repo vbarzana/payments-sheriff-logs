@@ -3,12 +3,13 @@ const CLS_SSO_SEARCH_RESULT_LIST = 'sso-search-result-list';
 const CLS_PORTAL_INSTANCE_RESULT_LIST = 'portal-instance-list';
 const CLS_PROFILE_LINK = 'profile-link';
 const CLS_PROFILE_NAME = 'profile-name';
-
+const SELECTOR_LOGS_HEADER = '.logs-table__header-row .logs-table__header-cell';
+const START_PAGE_URL_SUFFIX = '.awsapps.com/start';
 const TAG_SSO_EXPANDER = 'SSO-EXPANDER';
 
 function findTimestampColumn(frame) {
     let pos = -1;
-    frame.querySelectorAll('.logs-table__header-row .logs-table__header-cell').forEach((cell, idx) => {
+    frame.querySelectorAll(SELECTOR_LOGS_HEADER).forEach((cell, idx) => {
         if (cell.innerHTML.indexOf('timestamp') > 0) {
             pos = idx + 1;
             return true;
@@ -134,7 +135,7 @@ function changeDocumentTitleIfDifferent(frame) {
 }
 
 function isStartPage() {
-    return location.href.indexOf('.awsapps.com/start') >= 0;
+    return location.href.indexOf(START_PAGE_URL_SUFFIX) >= 0;
 }
 
 function getBreadcrumbs(frame) {
