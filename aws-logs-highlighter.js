@@ -1,4 +1,10 @@
 const SECONDS_DIFF_TO_HIGHLIGHT = 14;
+const CLS_SSO_SEARCH_RESULT_LIST = 'sso-search-result-list';
+const CLS_PORTAL_INSTANCE_RESULT_LIST = 'portal-instance-list';
+const CLS_PROFILE_LINK = 'profile-link';
+const CLS_PROFILE_NAME = 'profile-name';
+
+const TAG_SSO_EXPANDER = 'SSO-EXPANDER';
 
 function findTimestampColumn(frame) {
     let pos = -1;
@@ -149,7 +155,7 @@ async function wait(ms) {
 
 async function expandableElementClickHandler(event) {
     if (!event || !event.target
-        || event.target.classList.contains('profile-link')) {
+        || event.target.classList.contains(CLS_PROFILE_LINK)) {
         return;
     }
     await wait(500);
@@ -157,8 +163,8 @@ async function expandableElementClickHandler(event) {
     let expander;
     const nextSibling = parentSection && parentSection.nextElementSibling;
     if (nextSibling && (
-        nextSibling.classList.contains('sso-expander') ||
-        nextSibling.tagName === 'SSO-EXPANDER'
+        nextSibling.classList.contains(TAG_SSO_EXPANDER.toLowerCase()) ||
+        nextSibling.tagName === TAG_SSO_EXPANDER
     )) {
         expander = nextSibling;
     }
@@ -166,7 +172,7 @@ async function expandableElementClickHandler(event) {
     if (!expander) {
         return;
     }
-    const availableProfiles = Array.from(expander.querySelectorAll('.profile-name'));
+    const availableProfiles = Array.from(expander.querySelectorAll('.' + CLS_PROFILE_NAME));
     const aws12hProfile = availableProfiles.find((el) => el.textContent.indexOf('Access12h') >= 0);
     const firstAdminProfile = availableProfiles.find((el) => el.textContent.indexOf('Admin') >= 0);
     try {
@@ -190,17 +196,23 @@ function findParentInstanceSection(node) {
     return findParentInstanceSection(node.parentNode);
 }
 
-let element;
+let portalClickRegistered = false, ssoClickRegistered = false;
 
 function clickOnAwsAccess12hOnExpand() {
-    if (!isStartPage() || element || !document.querySelector) {
+    if (!isStartPage() || !document.querySelector) {
         return;
     }
-    element = document.querySelector('sso-search-result-list');
-    if(!element){
-        element = document.querySelector('portal-instance-list');
+    const ssoSearchResultList = document.querySelector(CLS_SSO_SEARCH_RESULT_LIST);
+    const portalInstanceList = document.querySelector(CLS_PORTAL_INSTANCE_RESULT_LIST);
+
+    if(!portalClickRegistered && portalInstanceList) {
+        portalClickRegistered = true;
+        portalInstanceList.addEventListener('click', expandableElementClickHandler);
     }
-    element && element.addEventListener('click', expandableElementClickHandler);
+    if(!ssoClickRegistered && ssoSearchResultList) {
+        ssoClickRegistered = true;
+        ssoSearchResultList.addEventListener('click', expandableElementClickHandler);
+    }
 }
 
 window.addEventListener ('load', ()=>{
