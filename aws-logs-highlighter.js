@@ -47,6 +47,7 @@ function highlightTimestampsInFrame(frame) {
             cell.style.fontSize = '14px';
         }
     }
+    clickOnAwsAccess12hOnExpand(frame);
     changeDocumentTitleIfDifferent(frame);
     if (isQueryRunning(frame)) {
         return;
@@ -99,7 +100,7 @@ let isPortalOpen = false;
 let portalTimeout;
 
 function openPortal() {
-    if (isPortalOpen || location.href.indexOf('.awsapps.com/start') < 0) {
+    if (isPortalOpen || !isStartPage()) {
         return clearTimeout(portalTimeout);
     }
     let portalBtn = document.getElementsByTagName('portal-application')[0];
@@ -127,6 +128,10 @@ function changeDocumentTitleIfDifferent(frame) {
     }
 }
 
+function isStartPage() {
+    return location.href.indexOf('.awsapps.com/start') >= 0;
+}
+
 function getBreadcrumbs(frame) {
     return frame.getElementsByClassName('awsui-breadcrumb');
 }
@@ -135,6 +140,57 @@ function isInCloudWatchLogs(frame) {
     const breadcrumbs = getBreadcrumbs(frame);
     const firstBreadcrumb = breadcrumbs[0];
     return firstBreadcrumb && firstBreadcrumb.textContent && firstBreadcrumb.textContent.indexOf('CloudWatch') >= 0;
+}
+
+async function wait(ms) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms || 1000);
+    });
+}
+
+async function expandableElementClickHandler(event) {
+    if (!event || !event.target
+        || event.target.classList.contains('profile-link')) {
+        return;
+    }
+    await wait(1000);
+    const parentSection = findParentInstanceSection(event.target);
+    let expander;
+    if (parentSection && parentSection.nextElementSibling && parentSection.nextElementSibling.classList.contains('sso-expander')) {
+        expander = parentSection.nextElementSibling;
+    } else {
+        expander = document.querySelector('sso-expander');
+    }
+
+    if (!expander) {
+        return;
+    }
+    const aws12hProfile = Array.from(expander.querySelectorAll('.profile-name')).find((el) => el.textContent.indexOf('Access12h') >= 0);
+    try {
+        aws12hProfile && aws12hProfile.nextElementSibling.click();
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function findParentInstanceSection(node) {
+    if (!node) {
+        return;
+    }
+    if (node.classList.contains('instance-section')) {
+        return node;
+    }
+    return findParentInstanceSection(node.parentNode);
+}
+
+let element;
+
+function clickOnAwsAccess12hOnExpand(frame) {
+    if (!isStartPage() || element || !frame || !frame.querySelector) {
+        return;
+    }
+    element = frame.querySelector('sso-search-result-list');
+    element && element.addEventListener('click', expandableElementClickHandler);
 }
 
 function start() {
