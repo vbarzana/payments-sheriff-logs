@@ -19,7 +19,7 @@ async function expandableElementClickHandler(event) {
         || event.target.classList.contains(CLS_PROFILE_LINK)) {
         return;
     }
-    await wait(500);
+    await wait(300);
     const parentSection = findParentInstanceSection(event.target);
     let expander;
     const nextSibling = parentSection && parentSection.nextElementSibling;
@@ -48,7 +48,7 @@ async function expandableElementClickHandler(event) {
 }
 
 function findParentInstanceSection(node) {
-    if (!node) {
+    if (!node || !node.classList) {
         return;
     }
     if (node.classList.contains(CLS_INSTANCE_SECTION)) {
