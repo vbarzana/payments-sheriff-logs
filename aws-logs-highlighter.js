@@ -47,7 +47,6 @@ function highlightTimestampsInFrame(frame) {
             cell.style.fontSize = '14px';
         }
     }
-    clickOnAwsAccess12hOnExpand(frame);
     changeDocumentTitleIfDifferent(frame);
     if (isQueryRunning(frame)) {
         return;
@@ -153,21 +152,29 @@ async function expandableElementClickHandler(event) {
         || event.target.classList.contains('profile-link')) {
         return;
     }
-    await wait(1000);
+    await wait(500);
     const parentSection = findParentInstanceSection(event.target);
     let expander;
-    if (parentSection && parentSection.nextElementSibling && parentSection.nextElementSibling.classList.contains('sso-expander')) {
-        expander = parentSection.nextElementSibling;
-    } else {
-        expander = document.querySelector('sso-expander');
+    const nextSibling = parentSection && parentSection.nextElementSibling;
+    if (nextSibling && (
+        nextSibling.classList.contains('sso-expander') ||
+        nextSibling.tagName === 'SSO-EXPANDER'
+    )) {
+        expander = nextSibling;
     }
 
     if (!expander) {
         return;
     }
-    const aws12hProfile = Array.from(expander.querySelectorAll('.profile-name')).find((el) => el.textContent.indexOf('Access12h') >= 0);
+    const availableProfiles = Array.from(expander.querySelectorAll('.profile-name'));
+    const aws12hProfile = availableProfiles.find((el) => el.textContent.indexOf('Access12h') >= 0);
+    const firstAdminProfile = availableProfiles.find((el) => el.textContent.indexOf('Admin') >= 0);
     try {
-        aws12hProfile && aws12hProfile.nextElementSibling.click();
+        if (aws12hProfile && aws12hProfile.nextElementSibling) {
+            aws12hProfile.nextElementSibling.click();
+        } else if (firstAdminProfile && firstAdminProfile.nextElementSibling) {
+            firstAdminProfile.nextElementSibling.click();
+        }
     } catch (err) {
         console.error(err);
     }
@@ -185,20 +192,27 @@ function findParentInstanceSection(node) {
 
 let element;
 
-function clickOnAwsAccess12hOnExpand(frame) {
-    if (!isStartPage() || element || !frame || !frame.querySelector) {
+function clickOnAwsAccess12hOnExpand() {
+    if (!isStartPage() || element || !document.querySelector) {
         return;
     }
-    element = frame.querySelector('sso-search-result-list');
+    element = document.querySelector('sso-search-result-list');
+    if(!element){
+        element = document.querySelector('portal-instance-list');
+    }
     element && element.addEventListener('click', expandableElementClickHandler);
 }
 
+window.addEventListener ('load', ()=>{
+    setTimeout(start, 1000);
+}, false);
+
 function start() {
     openPortal();
+    clickOnAwsAccess12hOnExpand();
     setInterval(function () {
+        clickOnAwsAccess12hOnExpand();
         highlightTimestampsOnPage();
-    }, 3000);
+    }, 2000);
     // add more initializers here
 }
-
-start();
