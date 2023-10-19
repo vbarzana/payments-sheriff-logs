@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Payments-Sheriff",
+  "name": "payments-sheriff",
   "version": "1.0",
   "icons": {
     "128": "icon.png"
@@ -13,7 +13,8 @@
         "https://*.awsapps.com/start*"
       ],
       "js": [
-        "aws-logs-highlighter.js"
+        "aws-logs-highlighter.js",
+        "aws-profile-automatic-selection.js"
       ],
       "all_frames": true
     }
