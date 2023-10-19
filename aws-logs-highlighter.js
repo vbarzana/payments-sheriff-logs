@@ -144,11 +144,13 @@ function isInCloudWatchLogs(frame) {
 }
 
 window.addEventListener('load', () => {
-    setTimeout(start, 1000);
+    setTimeout(startEverything, 1000);
 }, false);
 
-function start() {
+function startEverything() {
     openPortal();
+    clickOnAwsAccess12hOnExpand();
+    setTimeout(clickOnAwsAccess12hOnExpand, 1000);
 
     setInterval(function () {
         highlightTimestampsOnPage();

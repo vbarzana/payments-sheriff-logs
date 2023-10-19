@@ -2,7 +2,6 @@ const CLS_SSO_SEARCH_RESULT_LIST = 'sso-search-result-list';
 const CLS_PORTAL_INSTANCE_RESULT_LIST = 'portal-instance-list';
 const CLS_PROFILE_LINK = 'profile-link';
 const CLS_PROFILE_NAME = 'profile-name';
-const START_PAGE_URL_SUFFIX = '.awsapps.com/start';
 const TAG_SSO_EXPANDER = 'SSO-EXPANDER';
 
 function isStartPage() {
@@ -58,30 +57,15 @@ function findParentInstanceSection(node) {
     return findParentInstanceSection(node.parentNode);
 }
 
-let portalClickRegistered = false, ssoClickRegistered = false;
+let portalContainer = false;
 
 function clickOnAwsAccess12hOnExpand() {
     if (!isStartPage() || !document.querySelector) {
         return;
     }
-    const ssoSearchResultList = document.querySelector(CLS_SSO_SEARCH_RESULT_LIST);
-    const portalInstanceList = document.querySelector(CLS_PORTAL_INSTANCE_RESULT_LIST);
 
-    if (!portalClickRegistered && portalInstanceList) {
-        portalClickRegistered = true;
-        portalInstanceList.addEventListener('click', expandableElementClickHandler);
+    if (!portalContainer) {
+        portalContainer = document.querySelector('portal-dashboard');
+        portalContainer && portalContainer.addEventListener('click', expandableElementClickHandler);
     }
-    if (!ssoClickRegistered && ssoSearchResultList) {
-        ssoClickRegistered = true;
-        ssoSearchResultList.addEventListener('click', expandableElementClickHandler);
-    }
-}
-
-window.addEventListener('load', () => {
-    setTimeout(start, 1000);
-}, false);
-
-function start() {
-    clickOnAwsAccess12hOnExpand();
-    setTimeout(clickOnAwsAccess12hOnExpand, 2000);
 }
