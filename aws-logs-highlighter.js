@@ -1,6 +1,7 @@
 const SECONDS_DIFF_TO_HIGHLIGHT = 14;
 const SELECTOR_LOGS_HEADER = '.logs-table__header-row .logs-table__header-cell';
 const START_PAGE_URL_SUFFIX = '.awsapps.com/start';
+const CLOUDWATCH_PAGE_URL_SUFFIX = 'amazon.com/cloudwatch';
 
 function findTimestampColumn(frame) {
     let pos = -1;
@@ -97,40 +98,27 @@ function highlightTimestampsOnPage() {
     }
 }
 
-let isPortalOpen = false;
-let portalTimeout;
-
-function openPortal() {
-    if (isPortalOpen || !isStartPage()) {
-        return clearTimeout(portalTimeout);
-    }
-    let portalBtn = document.getElementsByTagName('portal-application')[0];
-    if (!portalBtn) {
-        return portalTimeout = setTimeout(openPortal, 300);
-    }
-    try {
-        console.log('Portal button loaded, clicking it for you! Your sheriff life just got easier :)');
-        portalBtn.click();
-        const searchInput = document.querySelector('sso-search input');
-        searchInput.focus();
-    } catch (err) {
-        console.log('Could not open profiles or focus search input', err);
-    }
-}
-
 function changeDocumentTitleIfDifferent(frame) {
     const breadcrumbs = getBreadcrumbs(frame);
     const activeBreadcrumb = breadcrumbs[breadcrumbs.length - 1];
     if (activeBreadcrumb && activeBreadcrumb.textContent && isInCloudWatchLogs(frame)) {
-        const newTitle = activeBreadcrumb.textContent.toUpperCase() || document.title;
-        if (document.title !== newTitle) {
-            document.title = newTitle;
-        }
+        const newTitle = activeBreadcrumb.textContent.toUpperCase();
+        updateDocumentTitle(newTitle);
+    }
+}
+
+function updateDocumentTitle(newTitle) {
+    if (document.title !== newTitle) {
+        document.title = newTitle;
     }
 }
 
 function isStartPage() {
     return location.href.indexOf(START_PAGE_URL_SUFFIX) >= 0;
+}
+
+function isCloudWatch() {
+    return location.href.indexOf(CLOUDWATCH_PAGE_URL_SUFFIX) >= 0;
 }
 
 function getBreadcrumbs(frame) {
@@ -148,11 +136,14 @@ window.addEventListener('load', () => {
 }, false);
 
 function startEverything() {
-    openPortal();
-    clickOnAwsAccess12hOnExpand();
-    setTimeout(clickOnAwsAccess12hOnExpand, 1000);
-
-    setInterval(function () {
+    if (isStartPage()) {
+        openPortal();
+        clickOnAwsAccess12hOnExpand();
+        setTimeout(clickOnAwsAccess12hOnExpand, 1000);
+    } else if (isCloudWatch()) {
         highlightTimestampsOnPage();
-    }, 2000);
+        setInterval(function () {
+            highlightTimestampsOnPage();
+        }, 3000);
+    }
 }

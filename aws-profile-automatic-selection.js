@@ -3,6 +3,7 @@ const CLS_PROFILE_NAME = 'profile-name';
 const CLS_INSTANCE_SECTION = 'instance-section';
 const TAG_SSO_EXPANDER = 'SSO-EXPANDER';
 const TAG_PORTAL_DASHBOARD = 'portal-dashboard';
+const MSG_TYPE_PROFILE_CHANGED = 'profile-changed';
 
 function isStartPage() {
     return location.href.indexOf(START_PAGE_URL_SUFFIX) >= 0;
@@ -12,6 +13,27 @@ async function wait(ms) {
     return new Promise((resolve) => {
         setTimeout(resolve, ms || 1000);
     });
+}
+
+let isPortalOpen = false;
+let portalTimeout;
+
+function openPortal() {
+    if (isPortalOpen || !isStartPage()) {
+        return clearTimeout(portalTimeout);
+    }
+    let portalBtn = document.getElementsByTagName('portal-application')[0];
+    if (!portalBtn) {
+        return portalTimeout = setTimeout(openPortal, 300);
+    }
+    try {
+        console.log('Portal button loaded, clicking it for you! Your sheriff life just got easier :)');
+        portalBtn.click();
+        const searchInput = document.querySelector('sso-search input');
+        searchInput.focus();
+    } catch (err) {
+        console.log('Could not open profiles or focus search input', err);
+    }
 }
 
 async function expandableElementClickHandler(event) {
@@ -34,16 +56,22 @@ async function expandableElementClickHandler(event) {
         return;
     }
     const availableProfiles = Array.from(expander.querySelectorAll('.' + CLS_PROFILE_NAME));
-    const aws12hProfile = availableProfiles.find((el) => el.textContent.indexOf('Access12h') >= 0);
-    const firstAdminProfile = availableProfiles.find((el) => el.textContent.indexOf('Admin') >= 0);
-    try {
-        if (aws12hProfile && aws12hProfile.nextElementSibling) {
-            aws12hProfile.nextElementSibling.click();
-        } else if (firstAdminProfile && firstAdminProfile.nextElementSibling) {
-            firstAdminProfile.nextElementSibling.click();
+    let profileToSelect = availableProfiles[0];
+    if (availableProfiles.length > 1) {
+        // first we capture the first 12h profile because it lasts longer
+        profileToSelect = availableProfiles.find((el) => el.textContent.indexOf('Access12h') >= 0);
+        if (!profileToSelect) {
+            // otherwise we fallback to the first admin profile
+            profileToSelect = availableProfiles.find((el) => el.textContent.indexOf('Admin') >= 0);
         }
+    }
+    try {
+        if (profileToSelect && profileToSelect.nextElementSibling) {
+            profileToSelect.nextElementSibling.click();
+        }
+
     } catch (err) {
-        console.error(err);
+        console.log('Failed to click on profile', err);
     }
 }
 
