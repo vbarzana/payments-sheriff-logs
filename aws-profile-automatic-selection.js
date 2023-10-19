@@ -1,8 +1,8 @@
-const CLS_SSO_SEARCH_RESULT_LIST = 'sso-search-result-list';
-const CLS_PORTAL_INSTANCE_RESULT_LIST = 'portal-instance-list';
 const CLS_PROFILE_LINK = 'profile-link';
 const CLS_PROFILE_NAME = 'profile-name';
+const CLS_INSTANCE_SECTION = 'instance-section';
 const TAG_SSO_EXPANDER = 'SSO-EXPANDER';
+const TAG_PORTAL_DASHBOARD = 'portal-dashboard';
 
 function isStartPage() {
     return location.href.indexOf(START_PAGE_URL_SUFFIX) >= 0;
@@ -51,7 +51,7 @@ function findParentInstanceSection(node) {
     if (!node) {
         return;
     }
-    if (node.classList.contains('instance-section')) {
+    if (node.classList.contains(CLS_INSTANCE_SECTION)) {
         return node;
     }
     return findParentInstanceSection(node.parentNode);
@@ -65,7 +65,7 @@ function clickOnAwsAccess12hOnExpand() {
     }
 
     if (!portalContainer) {
-        portalContainer = document.querySelector('portal-dashboard');
+        portalContainer = document.querySelector(TAG_PORTAL_DASHBOARD);
         portalContainer && portalContainer.addEventListener('click', expandableElementClickHandler);
     }
 }
