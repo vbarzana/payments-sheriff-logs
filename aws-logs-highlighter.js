@@ -144,11 +144,18 @@ function fixCloudwatchLogsScrollProblem(frame) {
     const navBar = document.querySelector('#awsc-navigation-container');
     const overlay = frame.querySelector('.logs-table__wrapper .ReactModal__Overlay');
     const logsMainContainer = frame.querySelector('.logs__main');
-    if (!scrollBound) {
-        scrollBound = true;
-        logsMainContainer.onscroll = fixCloudwatchLogsScrollProblem.bind(this, frame);
-    }
+    const logsTableWrapper = frame.querySelector('.logs-table__wrapper');
+
     if (navBar && overlay && logsMainContainer) {
+        if (!scrollBound) {
+            scrollBound = true;
+            logsMainContainer.onscroll = fixCloudwatchLogsScrollProblem.bind(this, frame);
+            if(logsTableWrapper) {
+                logsTableWrapper.onclick = function(){
+                    setTimeout(fixCloudwatchLogsScrollProblem.bind(this, frame), 1000);
+                }
+            }
+        }
         const navBarHeight = navBar.clientHeight;
         let newTop = logsMainContainer.scrollTop - navBarHeight;
         if (newTop < 0) {
