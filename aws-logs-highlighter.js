@@ -89,11 +89,6 @@ function highlightTimestampsOnPage() {
     const iframes = window.frames;
     for (let i = 0; i < iframes.length; i++) {
         try {
-            try {
-                fixCloudwatchLogsScrollProblem(iframes[i].document);
-            } catch (err) {
-
-            }
             highlightTimestampsInFrame(iframes[i].document);
         } catch (err) {
             if (err.message.indexOf('Blocked a frame') < 0) {
@@ -134,41 +129,6 @@ function isInCloudWatchLogs(frame) {
     const breadcrumbs = getBreadcrumbs(frame);
     const firstBreadcrumb = breadcrumbs[0];
     return firstBreadcrumb && firstBreadcrumb.textContent && firstBreadcrumb.textContent.indexOf('CloudWatch') >= 0;
-}
-
-let scrollBound = false;
-
-// Recently cloudwatch brought in a problem where the overlay is not positioned correctly
-// hence, reading the logs is a pain. This function fixes that.
-function fixCloudwatchLogsScrollProblem(frame) {
-    const navBar = document.querySelector('#awsc-navigation-container');
-    const overlay = frame.querySelector('.logs-table__wrapper .ReactModal__Overlay');
-    const logsMainContainer = frame.querySelector('.logs__main');
-    const logsTableWrapper = frame.querySelector('.logs-table__wrapper');
-
-    if (navBar && overlay && logsMainContainer) {
-        if (!scrollBound) {
-            scrollBound = true;
-            logsMainContainer.onscroll = fixCloudwatchLogsScrollProblem.bind(this, frame);
-            if(logsTableWrapper) {
-                logsTableWrapper.onclick = function(){
-                    setTimeout(fixCloudwatchLogsScrollProblem.bind(this, frame), 1000);
-                }
-            }
-        }
-        const navBarHeight = navBar.clientHeight;
-        let newTop = logsMainContainer.scrollTop - navBarHeight;
-        if (newTop < 0) {
-            newTop = 0;
-        }
-        if (overlay.style.position !== 'absolute') {
-            overlay.style.position = 'absolute';
-        }
-        newTop = `${newTop + 10}px`;
-        if (overlay.style.top !== newTop) {
-            overlay.style.top = newTop;
-        }
-    }
 }
 
 window.addEventListener('load', () => {
